@@ -36,7 +36,7 @@ const LoginProvider: FunctionComponent =  function LoginProvider(props) {
   const {sendRequest, isLoading} = useHttp();
 
   const logout = useCallback(async () => {
-    await sendRequest('/api/logout', {method:'GET'});
+    await sendRequest('/api/logout', {method:'POST'});
     Cookie.remove('name');
     Cookie.remove('image');
     setUser(undefined);
