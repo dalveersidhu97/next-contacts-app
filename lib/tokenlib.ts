@@ -34,6 +34,8 @@ export function signAndAddTokenToCookies(
     cookie.serialize("accessToken", token, {
       httpOnly: true,
       path: '/',
+      secure: true,
+      sameSite: 'strict',
       maxAge: expiresIn,
     })
   );
@@ -48,7 +50,9 @@ export function removeTokenCookie(res: NextApiResponse) {
         cookie.serialize("accessToken", '', {
           httpOnly: true,
           path: '/',
-          maxAge: 0,
+          secure: true,
+          sameSite: 'strict',
+          maxAge: -1000000,
         })
       );
 }

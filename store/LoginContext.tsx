@@ -38,7 +38,7 @@ const LoginProvider: FunctionComponent =  function LoginProvider(props) {
   const logout = useCallback(async () => {
     await sendRequest('/api/logout', {method:'GET'});
     Cookie.remove('name');
-    Cookie.remove('image')
+    Cookie.remove('image');
     setUser(undefined);
     router.replace('/login');
   }, [sendRequest]);
