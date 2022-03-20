@@ -39,6 +39,7 @@ const LoginProvider: FunctionComponent =  function LoginProvider(props) {
     await sendRequest('/api/logout', {method:'POST'});
     Cookie.remove('name');
     Cookie.remove('image');
+    Cookie.remove('accessToken');
     setUser(undefined);
     router.replace('/login');
   }, [sendRequest]);
