@@ -25,7 +25,7 @@ export default async function registerUser(req: NextApiRequest, res: NextApiResp
     return res.status(200).json(response);
   }
 
-  const newUser: User = {
+  const newUser = {
     name,email,password
   };
 
