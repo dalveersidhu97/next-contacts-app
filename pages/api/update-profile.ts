@@ -30,23 +30,13 @@ return new Promise((resolve, reject) => {
 });
 }
 
-const handler = async (req: NextApiRequest, res: NextApiResponse, user: User) => {
-    let response = {status: 'failed'}
-    let status = 500;
+const saveFile = (files: any, user: User) => {
 
-    const form = new formidable.IncomingForm();
-
-    form.parse(req, (err, fields, files)=>{
-        if(err) console.log(err);
-    });
-
-    try {
-        const { fields, files } = await formidablePromise(req);
-        console.log(fields);
+    const fileName = user._id.toString()+'_'+user.name.replace(' ', '_');
+        
         const dir = './public/'+user._id.toString()+'/profiles/';
         const ext = files.image.originalFilename.slice(files.image.originalFilename.lastIndexOf('.'));
-        const fileName = Date.now()%100000+user._id.toString().slice(-8)+'_'+user.name.replace(' ', '_')+ext;
-        const newPath = dir + fileName;
+        const newPath = dir + fileName+ext;
 
         if (!fs.existsSync(dir)){
             fs.mkdirSync(dir, { recursive: true });
@@ -54,19 +44,51 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, user: User) =>
 
         fs.copyFile(files.image.filepath, newPath, (err) => {
             if (err) throw err;
+            return;
         })
 
+        //fs.unlinkSync(files.image.filepath);
+        return {fileName, ext, newPath}
+}
+
+const handler = async (req: NextApiRequest, res: NextApiResponse, user: User) => {
+    let response = {status: 'failed', message: ""}
+    let status = 200;
+
+    try {
+        const { fields, files } = await formidablePromise(req);
+        let updatedFileds: {name?:string, image?:string, email?:string} = {}
+        
+        if(fields.name) updatedFileds.name = fields.name as string;
+        if(fields.email) updatedFileds.email = fields.email as string;
+
+        if(files && files.image){
+            const {fileName, ext, newPath} = saveFile(files, user);
+            updatedFileds.image = '/'+user._id.toString()+'/profiles/'+fileName+ext
+        }
+
+        console.log(fields)
+        console.log(updatedFileds)
+
         // update image name to database
-        await (await userCollection()).updateOne({_id: user._id}, {'$set': {image: '/'+user._id.toString()+'/profiles/'+fileName}})
+        await (await userCollection()).updateOne({_id: user._id}, {'$set':  updatedFileds})
 
         status = 200;
         response.status = 'success';
 
     }catch(err:any){
+        if(err && err.code == 11000) {
+            response.message = 'Email already been taken!';
+            return res.status(status).json(response);
+        }else {
+            status = 400;
+            response.message = 'Please try again!';
+        }
         console.log(err);
-    }finally{
-        res.status(status).json(response);
     }
+    
+    res.status(status).json(response);
+    
     
 }
 

@@ -25,7 +25,7 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
     return res.status(200).json(response)
 
   // Find user
-  const user = await (await userCollection()).findOne<User>({ email });
+  const user = await (await userCollection()).findOne<User>({'$or': [{email}, {'phone': email}]});
 
   // Password validation
   if (user==null || !await compare(password, user.password))

@@ -16,17 +16,18 @@ export default async function registerUser(req: NextApiRequest, res: NextApiResp
   let name = req.body.name;
   let email = req.body.email;
   let password = req.body.password;
+  let phone = req.body.phone
 
   console.log(req.body);
 
   // input validation
-  if(anyEmpty(name, email, password)){
+  if(anyEmpty(name, email, password, phone)){
     response.message = 'All fields are required!';
     return res.status(200).json(response);
   }
 
   const newUser = {
-    name,email,password
+    name,email,password,phone
   };
 
   // encrypt passwords
@@ -35,7 +36,7 @@ export default async function registerUser(req: NextApiRequest, res: NextApiResp
   // process
   const insertedUser = await insertDocument(newUser, await userCollection(), (err:any)=> {
     if (err.code && err.code === 11000) {
-      response.message = "Email already exists!";
+      response.message = "User already exists!";
     } else {
       console.log(err);
       response.message = "Something went wrong, Please try again!";

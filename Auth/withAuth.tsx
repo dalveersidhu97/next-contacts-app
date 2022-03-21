@@ -23,10 +23,10 @@ const withAuth = (gsps:GetSrvProps) => {
     let loggedIn = false;
 
     const user = await isLoggedIn(req.cookies.accessToken);
-    let loginUser: LoginUser = false;
+    let loginUser: LoginUser = undefined;
     if(user){
       loggedIn = true;
-      loginUser = {name: user.name, image: user.image || null, email: user.email, _id: user._id}
+      loginUser = {name: user.name, phone: user.phone, image: user.image || null, email: user.email, _id: user._id}
       signAndAddTokenToCookies(res as NextApiResponse, user);
     }
 

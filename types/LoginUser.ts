@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
 
-type LoginUser = false | {name: string, _id: ObjectId, email: string, image: string | null}
+type LoginUser = undefined | {name: string, _id: ObjectId, email: string, phone: string, image: string | null}
 
 export default LoginUser;

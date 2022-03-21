@@ -1,12 +1,13 @@
 import { FC } from "react";
 import Nav from "./Nav";
+import styles from './Layout.module.css';
 
 const Layout: FC = (props) => {
     return <div>
-        <header>
+        <header className={styles.main_header}>
             <Nav></Nav>
         </header>
-        <main>
+        <main className={styles.main}>
             {props.children}
         </main>
     </div>

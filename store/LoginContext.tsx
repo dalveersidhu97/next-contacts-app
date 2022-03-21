@@ -4,13 +4,16 @@ import Cookie from 'js-cookie';
 import { useRouter } from 'next/router';
 
 type User = {
-  name: string, 
-  image: string
-} | undefined
+  name: string,
+  image: string, 
+  email: string,
+  phone: string
+  _id: string
+}
 
 type Login = {
-    isLoggedIn: boolean,
-    user: User,
+    isLoggedIn: undefined | 'LOGGEDIN' | 'NOT_LOGGEDIN',
+    user?: User,
     login: (response:any) => void,
     logout: () => void,
     isLoading:boolean,
@@ -21,7 +24,7 @@ const LOGIN_URL = '/api/login';
 const VERIFY_LOGIN_URL = '/api/verify';
 
 export const LoginContext = createContext<Login>({
-    isLoggedIn: false,
+    isLoggedIn: undefined,
     login: (response:any) => {}, 
     logout: () => {},
     user: undefined,
@@ -30,8 +33,8 @@ export const LoginContext = createContext<Login>({
 });
 
 const LoginProvider: FunctionComponent =  function LoginProvider(props) {
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [user, setUser] = useState<{name: string, image: string}>();
+  const [loggedIn, setLoggedIn] = useState<undefined | 'LOGGEDIN' | 'NOT_LOGGEDIN'>(undefined);
+  const [user, setUser] = useState<User>();
   const router = useRouter();
   const {sendRequest, isLoading} = useHttp();
 
@@ -40,6 +43,7 @@ const LoginProvider: FunctionComponent =  function LoginProvider(props) {
     Cookie.remove('name');
     Cookie.remove('image');
     Cookie.remove('accessToken');
+    setLoggedIn('NOT_LOGGEDIN');
     setUser(undefined);
     router.replace('/login');
   }, [sendRequest]);
@@ -47,11 +51,9 @@ const LoginProvider: FunctionComponent =  function LoginProvider(props) {
 
   const processLogin = useCallback((response: any) => {
     if(response && response.status == 'success') {
-      console.log(response)
-      Cookie.set('name', response.data.name, { expires: 7, path: '/' });
-      Cookie.set('image', response.data.image, { expires: 7, path: '/' });
-      setUser(response.data);
-      setLoggedIn(true)
+      const user: User = {name: response.data.name, phone: response.data.phone, image: response.data.image, email: response.data.email, _id: response.data._id}
+      setLoggedIn('LOGGEDIN');
+      setUser(user);
     }else {
       logout();
     }

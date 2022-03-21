@@ -3,6 +3,7 @@ import { ObjectId } from "mongodb"
 export type User = {
     name: string,
     email: string,
+    phone: string,
     password: string,
     image?: string,
     _id: ObjectId
@@ -23,5 +24,6 @@ export type ContactSerializable = {
     phone: string,
     image?: string,
     _id: string,
+    registered?: boolean,
     userId: string
 }

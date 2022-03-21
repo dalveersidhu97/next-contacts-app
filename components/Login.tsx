@@ -28,7 +28,7 @@ const Login = () => {
     setMesssage(response.message)
 
     if(response.status == 'success'){
-      setTimeout(()=> {login(response);router.replace('/');}, 1000)
+      setTimeout(()=> {router.replace('/');login(response)}, 1000)
     }
     
   }
@@ -36,7 +36,7 @@ const Login = () => {
   return <div>
     <h1>Loign</h1>
     <form onSubmit={submitHandler}>
-      <input type="email" placeholder="Enter email" ref={emailRef}/>
+      <input type="phone" placeholder="Enter email or phone" ref={emailRef}/>
       <input type="password" placeholder="Enter password" ref={passRef} />
       <input type="submit" value="Login" />
     </form>

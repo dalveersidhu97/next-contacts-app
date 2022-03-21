@@ -1,6 +1,7 @@
 import Link from "next/link";
 import React, {useContext } from "react";
 import { LoginContext } from '../store/LoginContext';
+import styles from './Nav.module.css';
 
 const Nav = () => {
     const context =  useContext(LoginContext);
@@ -9,25 +10,31 @@ const Nav = () => {
         context.logout();
     }
 
-    return <div>
-        <nav>
-        {context.user && <ul>
-            <li><Link href={'/'}>Home</Link></li>
-            {/* <li><Link href={'/dashboard'}>Dashboard</Link></li> */}
-            {/* <li><Link href={'/contacts'}>Contacts</Link></li> */}
+    return <>
+
+        <h1 className={styles.header}>
+        {context.user &&
+            <>
+                <img src={context.user!.image}/> 
+                <span>{context.user?.name}</span>
+            </>
+        }
+        </h1>
+
+        <nav className={styles.nav}>
+        {context.isLoggedIn=='LOGGEDIN' && <ul>
+            <li><Link href={'/'}>Contacts On App</Link></li>
+            <li><Link href={'/all-contacts'}>Your contacts</Link></li>
             <li><Link href={'/add-contact'}>Add contact</Link></li>
             <li><Link href={'/profile'}>Profile</Link></li>
             <li><a href="#" onClick={logoutHandler}>Logout</a></li>
         </ul>}
-        {!context.user && <ul>
+        {context.isLoggedIn=='NOT_LOGGEDIN' && <ul>
             <li><Link href={'/login'}>Login</Link></li>
             <li><Link href={'/signup'}>Signup</Link></li>
         </ul>}
     </nav>
-        {context.user &&
-            <h4><img src={context.user!.image} width={50} height={50} style={{borderRadius: "50%", verticalAlign: "middle", objectFit: "cover"}}/> {context.user?.name}</h4>
-        }
-    </div>
+    </>
 }
 
 export default Nav;

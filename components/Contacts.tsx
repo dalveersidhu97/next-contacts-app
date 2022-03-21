@@ -1,29 +1,45 @@
 import { FunctionComponent } from "react";
 import { ContactSerializable } from "../types/DbModels";
+import styles from "./Contacts.module.css";
 
-const Contacts: FunctionComponent<{contactList: ContactSerializable[]}> = (props) => {
+const Contacts: FunctionComponent<{ heading:string, contactList: ContactSerializable[] }> = ({heading, contactList}) => {
+  const contacts = contactList;
 
-    const contacts = props.contactList;
+  if (contacts.length == 0) {
+    return (
+      <div>
+        <h1>No contacts</h1>
+      </div>
+    );
+  }
 
-    if(contacts.length == 0){
-        return <div>
-            <h1>No contacts</h1>
-        </div>
-    }
-
-    return <div>
-            <h1>Contacts</h1>
-            <ul>
-                {contacts.map(contact => 
-                    <li key={contact._id}>
-                        <b>{contact.name}</b><br/>
-                        <span>{contact.phone}</span><br/>
-                        <span>{contact.email}</span><br/><br/>
-                    </li>
-                )}
-            </ul>
-        </div>
-    
-}
+  return (
+    <div>
+      <h1>{heading}</h1>
+      <ul className={styles.contactList}>
+        {contacts.map((contact) => (
+          <li key={contact._id} className={styles.contact}>
+              <span>
+                
+                  <img
+                    src={contact.image || !!contact.image}
+                  />
+                
+              </span>
+              <span>
+                <b>{contact.name}</b>
+                <br />
+                <span>{contact.phone}</span>
+                <br />
+                <span>{contact.email}</span>
+                <br />
+              </span>
+            
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
 
 export default Contacts;

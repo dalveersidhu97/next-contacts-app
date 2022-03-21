@@ -2,7 +2,7 @@ db.createCollection('User', {
     validator: {
         $jsonSchema: {
             bsonType: "object",
-            required: ['name', 'email', 'password'],
+            required: ['name', 'email', 'password', 'phone'],
             properties: {
                 name: {
                     bsonType: "string",
@@ -10,6 +10,11 @@ db.createCollection('User', {
                     maxLength: 100,
                     minLength: 2
                   },
+                phone: {
+                    bsonType: 'string',
+                    maxLength: 20,
+                    minLength: 1
+                },
                 email: {
                     bsonType: "string",
                     maxLength: 100,
@@ -29,6 +34,7 @@ db.createCollection('User', {
 })
 
 db.User.createIndex({email: 1}, {unique: true});
+db.User.createIndex({phone: 1}, {unique: true});
 
 db.createCollection('Contacts', {
     validator: {
@@ -63,4 +69,5 @@ db.createCollection('Contacts', {
     }
 })
 
-db.Contacts.createIndex({phone: 1}, {unique: true});
+db.Contacts.createIndex({phone: 1, userId: 1}, {unique: true});
+db.Contacts.createIndex({email: 1, userId: 1}, {unique: true});

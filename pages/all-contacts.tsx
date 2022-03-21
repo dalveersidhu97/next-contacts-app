@@ -8,7 +8,7 @@ import LoginUser from "../types/LoginUser";
 const ContactsPage: NextPage<{contacts: ContactSerializable[]}> = (props) => {
     const contacts = props.contacts as ContactSerializable[];
     return <div>
-        <Contacts contactList={contacts}></Contacts>
+        <Contacts heading="Your contacts" contactList={contacts}></Contacts>
     </div>
 }
 

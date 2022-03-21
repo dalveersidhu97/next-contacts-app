@@ -1,0 +1,30 @@
+
+.contactList {
+    display: flex;
+    flex-direction: column;
+    gap: 1.6rem;
+}
+
+.contact {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 1rem;
+    justify-content: left;
+    align-items: center;
+    background-color: green;
+    padding: .4rem .8rem;
+    border-radius: .4rem;
+}
+
+.contact img {
+    vertical-align: middle;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: 50% 0%;
+    align-self: center;
+    vertical-align: middle;
+    border: 1px solid #ccc;
+    background-color: #ccc;
+}
