@@ -57,10 +57,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, user: User) =>
 
     try {
         const { fields, files } = await formidablePromise(req);
-        let updatedFileds: {name?:string, image?:string, email?:string} = {}
+        let updatedFileds: {name?:string, image?:string, email?:string, phone?: string} = {}
         
         if(fields.name) updatedFileds.name = fields.name as string;
         if(fields.email) updatedFileds.email = fields.email as string;
+        if(fields.phone) updatedFileds.phone = fields.phone as string;
 
         if(files && files.image){
             const {fileName, ext, newPath} = saveFile(files, user);
