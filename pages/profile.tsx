@@ -55,10 +55,10 @@ const ProfilePage: NextPage<{loginUser: LoginUser}> = (props) => {
             if(data && data.status == 'success') {
                 setUploadProgress('');
                 setUploadMessage('Profile updated successfuly!');
+                context.verify();
             }else {
                 setUploadMessage(data.message);
             }
-            context.verify();
             setUploadProgress('');
         }catch(e){
             setUploadMessage('Something went wrong please try again!');
@@ -73,7 +73,7 @@ const ProfilePage: NextPage<{loginUser: LoginUser}> = (props) => {
         <h1>Profile</h1>
         <form className='profile_form' onSubmit={submitHandler} encType="multipart/form-data">
             <div>
-                <img src={imageSrc}/>
+                {imageSrc ? <img src={imageSrc}/> : <img />}
             </div>
             <button onClick={(e)=>{e.preventDefault();fileRef.current?.click()}}>Choose new image</button>
             <input type="file" accept="image/*" ref={fileRef} onClick={chooseFileHandler} onChange ={chooseFileHandler} style={{display: "none"}}/>

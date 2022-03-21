@@ -22,7 +22,7 @@ const Contacts: FunctionComponent<{ heading:string, contactList: ContactSerializ
               <span>
                 
                   <img
-                    src={contact.image || !!contact.image}
+                    src={contact.image}
                   />
                 
               </span>
