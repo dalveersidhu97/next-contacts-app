@@ -1,11 +1,12 @@
-import { FormEvent, useContext, useRef, useState } from "react";
+import { FormEvent, PropsWithChildren, useContext, useRef, useState } from "react";
 import { LoginContext } from "../store/LoginContext";
 import axios from 'axios';
 import withAuth from "../Auth/withAuth";
 import { GetServerSidePropsContext, NextPage } from "next";
 import LoginUser from "../types/LoginUser";
+import withVerifyAuthClient from "../Auth/withVerfyAuthClient";
 
-const ProfilePage: NextPage<{loginUser: LoginUser}> = (props) => {
+const ProfilePage = (props: PropsWithChildren<{loginUser: LoginUser}>) => {
     const [uploadProgress, setUploadProgress] = useState<string>('');
     const [uploadMessage, setUploadMessage] = useState<string>('');
     const context = useContext(LoginContext);
@@ -22,7 +23,6 @@ const ProfilePage: NextPage<{loginUser: LoginUser}> = (props) => {
             setChooseImage((window.URL ? URL : webkitURL).createObjectURL(fileRef.current.files[0]));
         }
     }
-
 
 
     const submitHandler = async (e:FormEvent) => {
@@ -49,7 +49,6 @@ const ProfilePage: NextPage<{loginUser: LoginUser}> = (props) => {
                     else setUploadProgress( Math.round((progressEvent.loaded * 100) / progressEvent.total) + '%');
                 }
             });
-            console.log('request sent')
             const data = response.data;
 
             if(data && data.status == 'success') {
@@ -67,7 +66,6 @@ const ProfilePage: NextPage<{loginUser: LoginUser}> = (props) => {
     }
 
     const imageSrc = (choosenImage) ? choosenImage : context.user?.image || loginuser?.image;
-    console.log(choosenImage)
 
     return <div>
         <h1>Profile</h1>
@@ -97,9 +95,10 @@ const ProfilePage: NextPage<{loginUser: LoginUser}> = (props) => {
     </div>
 }
 
-export default ProfilePage;
+export default withVerifyAuthClient<{loginUser: LoginUser}>(ProfilePage);
 
 export const getServerSideProps = withAuth(async (ctx: GetServerSidePropsContext, loginUser: LoginUser)=>{
+
     return {
         props: {loginUser: {...loginUser, _id: loginUser?._id.toString()}}
     }

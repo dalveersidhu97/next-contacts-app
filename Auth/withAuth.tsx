@@ -10,7 +10,7 @@ import { User } from "../types/DbModels";
 import LoginUser from "../types/LoginUser";
 
 const PROTECTED_ROUTES_EXAT = ['/'];
-const PROTECTED_ROUTES = ['/dashboard']
+const PROTECTED_ROUTES = ['/all-contacts', '/profile', '/add-contact']
 const ONLY_NON_LOGIN_ROUTES = ['/login', '/signup']
 
 type GetSrvProps = (gspcx: GetServerSidePropsContext, user: LoginUser)=>Promise<GetServerSidePropsResult<any>>;
@@ -33,10 +33,7 @@ const withAuth = (gsps:GetSrvProps) => {
     // identify route type
     const url = new URL('http://'+req.headers.host+req.url!);
 
-    const redirect = {redirect: {
-      permanent: false,
-      destination: "/login"
-    }}
+    const redirect = {props: {}}
 
 
     if(!loggedIn){

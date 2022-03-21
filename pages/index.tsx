@@ -1,16 +1,21 @@
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from "next";
+import { useContext } from "react";
+import { isContext } from "vm";
 import withAuth from "../Auth/withAuth";
+import withVerifyAuthClient from "../Auth/withVerfyAuthClient";
 import Contacts from "../components/Contacts";
 import { contactCollection, userCollection } from "../db/collections";
+import { LoginContext } from "../store/LoginContext";
 import { Contact, ContactSerializable } from "../types/DbModels";
 import LoginUser from "../types/LoginUser";
 
-const ContactsPage: NextPage<{registredContacts: ContactSerializable[]}> = ({registredContacts}) => {
-    
+const ContactsPage = withVerifyAuthClient<{registredContacts: ContactSerializable[]}> ((props) => {
+
     return <div>
-        <Contacts heading="Your contacts using ContactApp" contactList={registredContacts}></Contacts>
+        <Contacts heading="Your contacts using ContactApp" contactList={props.registredContacts}></Contacts>
     </div>
-}
+    
+})
 
 export const getServerSideProps: GetServerSideProps = withAuth(async (ctx:GetServerSidePropsContext, loginUser: LoginUser) => {
     
@@ -31,7 +36,7 @@ export const getServerSideProps: GetServerSideProps = withAuth(async (ctx:GetSer
         // });
 
         return {
-            props: {registredContacts}
+            props: {registredContacts, loginUser: {...loginUser, _id: loginUser._id.toString()}}
         }
     }
 

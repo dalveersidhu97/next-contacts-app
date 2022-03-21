@@ -63,10 +63,11 @@ const LoginProvider: FunctionComponent =  function LoginProvider(props) {
       processLogin(response);
   }
 
-  const verify = async () => {
+  const verify = useCallback(async () => {
+    console.log('Verify')
     const response = await sendRequest(VERIFY_LOGIN_URL, {});
     processLogin(response);
-  }
+  }, [processLogin, sendRequest]);
 
   const context: Login = {
       isLoggedIn: loggedIn,
@@ -82,7 +83,8 @@ const LoginProvider: FunctionComponent =  function LoginProvider(props) {
     if(!loggedIn){
       verify();
     }
-  }, [loggedIn, sendRequest, processLogin]);
+    console.log('useEffet')
+  }, [loggedIn, sendRequest, processLogin, verify]);
 
   return (
     <LoginContext.Provider value={context}>
