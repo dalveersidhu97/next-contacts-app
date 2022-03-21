@@ -48,7 +48,7 @@ const saveFile = (files: any, user: User) => {
         })
 
         //fs.unlinkSync(files.image.filepath);
-        return {fileName, ext, newPath}
+        return {fileName, ext, newPath: files.image.filepath}
 }
 
 const handler = async (req: NextApiRequest, res: NextApiResponse, user: User) => {
