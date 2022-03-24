@@ -9,6 +9,15 @@ export type User = {
     _id: ObjectId
 }
 
+export type UserSerializable = {
+    name: string,
+    email: string,
+    phone: string,
+    password?: string,
+    image?: string,
+    _id: string
+}
+
 export type Contact = {
     name: string,
     phone: string, 

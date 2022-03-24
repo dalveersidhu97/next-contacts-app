@@ -1,90 +1,96 @@
-import { createContext, Dispatch, FunctionComponent, SetStateAction, useCallback, useContext, useEffect, useState } from 'react';
+import { createContext, FunctionComponent, useCallback, useEffect, useState } from 'react';
 import useHttp from '../hooks/use-http';
 import Cookie from 'js-cookie';
-import { useRouter } from 'next/router';
+import {useRouter} from 'next/router';
+import { UserSerializable } from '../types/DbModels';
 
-type User = {
-  name: string,
-  image: string, 
-  email: string,
-  phone: string
-  _id: string
-}
+type User = UserSerializable;
 
 type Login = {
-    isLoggedIn: undefined | 'LOGGEDIN' | 'NOT_LOGGEDIN',
     user?: User,
-    login: (response:any) => void,
+    login: (email: string, password: string) => Promise<string | false>,
     logout: () => void,
+    referesh: () => void,
     isLoading:boolean,
-    verify: ()=>void
+    error: string | undefined
 }
 
 const LOGIN_URL = '/api/login';
 const VERIFY_LOGIN_URL = '/api/verify';
 
 export const LoginContext = createContext<Login>({
-    isLoggedIn: undefined,
-    login: (response:any) => {}, 
+    login: async (email: string, pass: string) => false, 
     logout: () => {},
     user: undefined,
     isLoading: false,
-    verify: ()=>{}
+    referesh: () => {},
+    error: undefined
 });
 
-const LoginProvider: FunctionComponent =  function LoginProvider(props) {
-  const [loggedIn, setLoggedIn] = useState<undefined | 'LOGGEDIN' | 'NOT_LOGGEDIN'>(undefined);
-  const [user, setUser] = useState<User>();
-  const router = useRouter();
-  const {sendRequest, isLoading} = useHttp();
+const LoginProvider: FunctionComponent<{loginUser: User}> =  function LoginProvider(props) {
+  const [user, setUser] = useState<User | undefined>(props.loginUser);
+  const {sendRequest, isLoading, error} = useHttp();
+  const Router = useRouter();
 
   const logout = useCallback(async () => {
     await sendRequest('/api/logout', {method:'POST'});
     Cookie.remove('name');
     Cookie.remove('image');
     Cookie.remove('accessToken');
-    setLoggedIn('NOT_LOGGEDIN');
     setUser(undefined);
-    router.replace('/login');
   }, [sendRequest]);
 
 
-  const processLogin = useCallback((response: any) => {
+  const login = useCallback(async (email: string, password: string) => {
+    
+    const response = await sendRequest('/api/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({email, password})
+    });
+
+    if(error) return error;
+
+    if(!response) return false;
+
     if(response && response.status == 'success') {
       const user: User = {name: response.data.name, phone: response.data.phone, image: response.data.image, email: response.data.email, _id: response.data._id}
-      setLoggedIn('LOGGEDIN');
-      setUser(user);
-    }else {
-      logout();
+      setTimeout(()=> {Router.replace('/');setUser(user);}, 1000)
     }
-  }, [logout]);
 
-  const login = async (response: any) => {
-      processLogin(response);
+    const message = response.message as string
+    return message;
+  }, [Router, error, sendRequest]);
+
+  const referesh = async () => {
+    const response = await sendRequest('/api/verify', {});
+
+    if(error || !response) return logout();
+
+    if(response.status == 'success') {
+      const user: User = {name: response.data.name, phone: response.data.phone, image: response.data.image, email: response.data.email, _id: response.data._id}
+      setUser(user);
+    }
   }
 
-  const verify = useCallback(async () => {
-    console.log('Verify')
-    const response = await sendRequest(VERIFY_LOGIN_URL, {});
-    processLogin(response);
-  }, [processLogin, sendRequest]);
-
   const context: Login = {
-      isLoggedIn: loggedIn,
       user,
       login,
       logout,
       isLoading,
-      verify
+      error,
+      referesh
   }
 
-  
-  useEffect(()=> {
-    if(!loggedIn){
-      verify();
+  const isLoggedIn = props.loginUser ? true: false;
+
+  useEffect(()=>{
+    if(!isLoggedIn) {
+      logout();
     }
-    console.log('useEffet')
-  }, [loggedIn, sendRequest, processLogin, verify]);
+  }, [isLoggedIn, logout]);
 
   return (
     <LoginContext.Provider value={context}>

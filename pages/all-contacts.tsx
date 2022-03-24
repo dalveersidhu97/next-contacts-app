@@ -1,20 +1,18 @@
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from "next";
-import { PropsWithChildren } from "react";
 import withAuth from "../Auth/withAuth";
-import withVerifyAuthClient from "../Auth/withVerfyAuthClient";
 import Contacts from "../components/Contacts";
 import { contactCollection } from "../db/collections";
 import { Contact, ContactSerializable } from "../types/DbModels";
 import LoginUser from "../types/LoginUser";
 
-const ContactsPage = (props: PropsWithChildren<{contacts: ContactSerializable[]}>) => {
+const ContactsPage: NextPage<{contacts: ContactSerializable[]}> = (props) => {
     const contacts = props.contacts as ContactSerializable[];
     return <div>
         <Contacts heading="Your contacts" contactList={contacts}></Contacts>
     </div>
 }
 
-export default withVerifyAuthClient<{contacts: ContactSerializable[]}>(ContactsPage);
+export default ContactsPage;
 
 export const getServerSideProps: GetServerSideProps = withAuth(async (ctx:GetServerSidePropsContext, loginUser: LoginUser) => {
     

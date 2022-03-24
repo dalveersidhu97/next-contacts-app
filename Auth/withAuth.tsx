@@ -1,12 +1,10 @@
 import {
-  GetServerSideProps,
   GetServerSidePropsContext,
   GetServerSidePropsResult,
   NextApiResponse,
 } from "next";
 import { isLoggedIn } from "../lib/isLoggedin";
 import { signAndAddTokenToCookies } from "../lib/tokenlib";
-import { User } from "../types/DbModels";
 import LoginUser from "../types/LoginUser";
 
 const PROTECTED_ROUTES_EXAT = ['/'];
@@ -33,7 +31,7 @@ const withAuth = (gsps:GetSrvProps) => {
     // identify route type
     const url = new URL('http://'+req.headers.host+req.url!);
 
-    const redirect = {props: {}}
+    const redirect = {redirect: {permanent: false, destination: '/login'}}
 
 
     if(!loggedIn){

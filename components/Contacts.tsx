@@ -5,7 +5,7 @@ import styles from "./Contacts.module.css";
 const Contacts: FunctionComponent<{ heading:string, contactList: ContactSerializable[] }> = ({heading, contactList}) => {
   const contacts = contactList;
 
-  if (contacts.length == 0) {
+  if (!contacts || contacts.length == 0) {
     return (
       <div>
         <h1>No contacts</h1>

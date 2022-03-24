@@ -9,7 +9,7 @@ import { User } from "../../types/DbModels";
 export default async function verify(req: NextApiRequest, res: NextApiResponse) {
     
     // Check if token exists in the cookies
-    const token = req.cookies.accessToken;
+    const token = req.cookies.accessToken || req.headers.authorization;
     if(!token)
         return res.json({status: 'failed', message: 'Not logged In'});
 
@@ -18,14 +18,15 @@ export default async function verify(req: NextApiRequest, res: NextApiResponse) 
 
     if (decoded == undefined){
         removeTokenCookie(res);
-        return res.json({message: 'Invalid token!'});
+        return res.json({status: 'failed', message: 'Invalid token!'});
     }
 
     // Check if the User still exits for this token
     const user = await (await userCollection()).findOne<User>({ 'email': decoded.email });
+
     if(user) {
-        //signAndAddTokenToCookies(res, user); // update token
-        return res.status(200).json({status: 'success', message: 'Login verified', data: {id: user._id, name: user.name, email: user.email, image: user.image}});
+        signAndAddTokenToCookies(res, user); // update token
+        return res.status(200).json({status: 'success', message: 'Login verified', data: {...user}});
     }
 
     res.json({status: 'failed', message: 'Not logged In'});

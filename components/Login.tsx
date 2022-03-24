@@ -1,13 +1,10 @@
 import { useRouter } from 'next/router';
-import React, { FormEvent, FunctionComponent, useRef, useContext, useState } from 'react'
-import useHttp from '../hooks/use-http';
+import React, { FormEvent, useRef, useContext, useState } from 'react'
 import { LoginContext } from '../store/LoginContext';
-import { User } from '../types/DbModels';
 
 const Login = () => {
-  const {login} = useContext(LoginContext);
+  const {login, isLoading, error} = useContext(LoginContext);
   const router = useRouter();
-  const {sendRequest, isLoading, error} = useHttp();
   const emailRef = useRef<HTMLInputElement>(null);
   const passRef = useRef<HTMLInputElement>(null);
 
@@ -16,21 +13,9 @@ const Login = () => {
   const submitHandler = async (e:FormEvent) => {
     e.preventDefault();
 
-    const response = await sendRequest('/api/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({email: emailRef.current!.value, password:passRef.current!.value})
-    });
+    const loginResponse = await login(emailRef.current!.value, passRef.current!.value)
 
-    if(!response) return;
-    setMesssage(response.message)
-
-    if(response.status == 'success'){
-      setTimeout(()=> {router.replace('/');login(response)}, 1000)
-    }
-    
+    setMesssage(loginResponse || '')
   }
 
   return <div>

@@ -14,9 +14,9 @@ const ProfilePage = (props: PropsWithChildren<{loginUser: LoginUser}>) => {
     const [choosenImage, setChooseImage] = useState<string | null>(null);
 
     const fileRef = useRef<HTMLInputElement>(null);
-    const [name, setName] = useState(context.user?.name || loginuser?.name);
-    const [email, setEmail] = useState(context.user?.email || loginuser?.email);
-    const [phone, setPhone] = useState(context.user?.phone || loginuser?.phone);
+    const [name, setName] = useState(loginuser?.name);
+    const [email, setEmail] = useState(loginuser?.email);
+    const [phone, setPhone] = useState(loginuser?.phone);
 
     const chooseFileHandler = (e: FormEvent) =>{
         if(fileRef.current?.files && fileRef.current.files[0]){
@@ -54,7 +54,7 @@ const ProfilePage = (props: PropsWithChildren<{loginUser: LoginUser}>) => {
             if(data && data.status == 'success') {
                 setUploadProgress('');
                 setUploadMessage('Profile updated successfuly!');
-                context.verify();
+                context.referesh();
             }else {
                 setUploadMessage(data.message);
             }
@@ -97,9 +97,9 @@ const ProfilePage = (props: PropsWithChildren<{loginUser: LoginUser}>) => {
 
 export default withVerifyAuthClient<{loginUser: LoginUser}>(ProfilePage);
 
-export const getServerSideProps = withAuth(async (ctx: GetServerSidePropsContext, loginUser: LoginUser)=>{
+// export const getServerSideProps = withAuth(async (ctx: GetServerSidePropsContext, loginUser: LoginUser)=>{
 
-    return {
-        props: {loginUser: {...loginUser, _id: loginUser?._id.toString()}}
-    }
-});
+//     return {
+//         props: {loginUser: {...loginUser, _id: loginUser?._id.toString()}}
+//     }
+// });

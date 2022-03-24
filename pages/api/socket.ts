@@ -2,8 +2,12 @@ import { IncomingMessage, ServerResponse } from "http";
 import { NextApiRequest, NextApiResponse } from "next";
 import {Server} from 'socket.io';
 
+type SocketServer = {io: any}
+type IO = {server: SocketServer}
 
-const handler = (req: IncomingMessage, res: ServerResponse) => {
+type IOServer = IO & ServerResponse
+
+const handler = (req: IncomingMessage, res: any) => {
 
     if(res.socket?.server.io)
         console.log('Socket already running.')
@@ -11,7 +15,7 @@ const handler = (req: IncomingMessage, res: ServerResponse) => {
         console.log('Initializing socket..')
         const io = new Server(res.socket?.server);
 
-        res.socket?.server.io = io;
+        res.socket.server.io = io;
 
         io.on('connection', (socket)=>{
             socket.on('message', (msg)=>{
